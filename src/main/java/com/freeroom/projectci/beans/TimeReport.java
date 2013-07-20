@@ -9,13 +9,13 @@ public class TimeReport {
     private long id;
 
     @Persist
-    private long reportDate;
+    private long date;
 
     @Persist
     private TeamMember person;
 
     @Persist
-    private ReportType reportType;
+    private ReportType type;
 
     @Persist
     private long hours;
@@ -24,4 +24,8 @@ public class TimeReport {
     private String comment;
 
     private IdPurpose idPurpose;
+
+    public long getHours() {
+        return hours;
+    }
 }
