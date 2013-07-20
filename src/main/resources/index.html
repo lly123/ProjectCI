@@ -22,13 +22,25 @@
             {
                 return Date.parse($scope.reportDateStr);
             }
+
+            $scope.effort = function(collection) {
+                return roundTwo(collection.usedEffort) + " / " + roundTwo(collection.estimatedEffort);
+            }
+
+            $scope.percentage = function(collection) {
+                return collection.percentage + '%';
+            }
+
+            roundTwo = function(n) {
+                return Math.round(n / 8 * 100) / 100;
+            }
         }
     </script>
 </head>
 <body ng-app="bookApp" ng-init='[MODEL_DATA]' ng-controller="Ctrl">
     <div class="container">
         <div class="row-fluid">
-            <div class="span9" style="text-align: center">
+            <div class="span9" style="text-align: center; height: 70px">
                 <h1><a href="/">ILDS Project Status</a></h1>
             </div>
         </div>
@@ -38,73 +50,62 @@
                     <thead>
                         <tr>
                             <th class="span3">Team Valuable Activity</th>
-                            <th class="span2">Effort</th>
-                            <th>Time Slot</th>
+                            <th class="span2">Effort (days)</th>
+                            <th>Time Slot (%)</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td>User Story Development</td>
-                            <td>{{userStory.usedEffort}} / {{userStory.totalEffort}}</td>
+                            <td>User Story (+ iiNet)</td>
+                            <td>{{effort(userStory)}}</td>
                             <td>
                                 <div class="progress progress-success progress-striped">
-                                    <div class="bar" ng-style="{'width': ((userStory.usedEffort / userStory.totalEffort) * 100) + '%'}"></div>
+                                    <div class="bar" ng-style="{'width': percentage(userStory)}">{{percentage(userStory)}}</div>
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>High Level Design</td>
+                            <td>{{effort(highLevelDesign)}}</td>
                             <td>
                                 <div class="progress progress-success progress-striped">
-                                    <div class="bar" style="width: 0%"></div>
+                                    <div class="bar" ng-style="{'width': percentage(highLevelDesign)}">{{percentage(highLevelDesign)}}</div>
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>QSA Work</td>
+                            <td>{{effort(QSA)}}</td>
                             <td>
                                 <div class="progress progress-success progress-striped">
-                                    <div class="bar" style="width: 0%"></div>
+                                    <div class="bar" ng-style="{'width': percentage(QSA)}">{{percentage(QSA)}}</div>
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>Performance Testing</td>
+                            <td>{{effort(performanceTesting)}}</td>
                             <td>
                                 <div class="progress progress-success progress-striped">
-                                    <div class="bar" style="width: 0%"></div>
+                                    <div class="bar" ng-style="{'width': percentage(performanceTesting)}">{{percentage(performanceTesting)}}</div>
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>Integration Testing</td>
+                            <td>{{effort(integrationTesting)}}</td>
                             <td>
                                 <div class="progress progress-success progress-striped">
-                                    <div class="bar" style="width: 0%"></div>
+                                    <div class="bar" ng-style="{'width': percentage(integrationTesting)}">{{percentage(integrationTesting)}}</div>
                                 </div>
                             </td>
                         </tr>
                         <tr>
-                            <td>iiNet</td>
+                            <td>Document</td>
+                            <td>{{effort(document)}}</td>
                             <td>
                                 <div class="progress progress-success progress-striped">
-                                    <div class="bar" style="width: 0%"></div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Document (Deployment)</td>
-                            <td>
-                                <div class="progress progress-success progress-striped">
-                                    <div class="bar" style="width: 0%"></div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Document (User Guide)</td>
-                            <td>
-                                <div class="progress progress-success progress-striped">
-                                    <div class="bar" style="width: 0%"></div>
+                                    <div class="bar" ng-style="{'width': percentage(document)}">{{percentage(document)}}</div>
                                 </div>
                             </td>
                         </tr>
@@ -166,11 +167,10 @@
                                 <ul class="dropdown-menu">
                                     <li><a tabindex="-1" href="#" ng-click="reportType='UserStory'">UserStory</a></li>
                                     <li><a tabindex="-1" href="#" ng-click="reportType='HighLevelDesign'">HighLevelDesign</a></li>
-                                    <li><a tabindex="-1" href="#" ng-click="reportType='DeploymentDoc'">DeploymentDoc</a></li>
-                                    <li><a tabindex="-1" href="#" ng-click="reportType='UserGuideDoc'">UserGuideDoc</a></li>
                                     <li><a tabindex="-1" href="#" ng-click="reportType='QSA'">QSA</a></li>
                                     <li><a tabindex="-1" href="#" ng-click="reportType='PerformanceTesting'">PerformanceTesting</a></li>
                                     <li><a tabindex="-1" href="#" ng-click="reportType='IntegrationTesting'">IntegrationTesting</a></li>
+                                    <li><a tabindex="-1" href="#" ng-click="reportType='Document'">Document</a></li>
                                 </ul>
                             </div>
                         </div>

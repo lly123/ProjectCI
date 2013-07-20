@@ -6,23 +6,21 @@ import com.freeroom.persistence.Athena;
 
 import java.util.List;
 
-import static com.freeroom.projectci.beans.ReportType.UserStory;
+import static java.lang.String.format;
 
 @Bean
 public class ReportService {
 
-    private static final long ALLOCATED_USER_STORY_EFFORT = 308;
-
     @Inject
     private Athena athena;
 
-    public Collection getUserStoryCollection()
+    public Collection getCollection(ReportType type)
     {
-        return new Collection(UserStory, ALLOCATED_USER_STORY_EFFORT,
-                calUsedEffort(athena.from(TimeReport.class).find("type='UserStory'")));
+        return new Collection(type, type.getEstimatedEffort(),
+                calculateUsedEffort(athena.from(TimeReport.class).find(format("type='%s'", type))));
     }
 
-    private long calUsedEffort(List<Object> reports) {
+    private long calculateUsedEffort(List<Object> reports) {
         long usedEffort = 0;
         for (Object report : reports) {
             usedEffort += ((TimeReport) report).getHours();
