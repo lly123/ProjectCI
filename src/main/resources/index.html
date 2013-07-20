@@ -24,15 +24,50 @@
             }
 
             $scope.effort = function(collection) {
-                return roundTwo(collection.usedEffort) + " / " + roundTwo(collection.estimatedEffort);
+                return $scope.toDays(collection.usedEffort) + " / " + $scope.toDays(collection.estimatedEffort);
             }
 
             $scope.percentage = function(collection) {
                 return collection.percentage + '%';
             }
 
-            roundTwo = function(n) {
+            $scope.tickBarPercentage = function(tickBar) {
+                return Math.round(tickBar.snd / tickBar.fst * 100);
+            }
+
+            $scope.validEffortPercentage = function() {
+                return Math.round($scope.totalValuableEffort() / $scope.totalEstimation() * 100);
+            }
+
+            $scope.totalValuableEffort = function() {
+                return getValidEffort($scope.userStory) +
+                        getValidEffort($scope.highLevelDesign) +
+                        getValidEffort($scope.QSA) +
+                        getValidEffort($scope.performanceTesting) +
+                        getValidEffort($scope.integrationTesting) +
+                        getValidEffort($scope.documentWriting);
+            }
+
+            $scope.totalEstimation = function() {
+                return $scope.userStory.estimatedEffort +
+                        $scope.highLevelDesign.estimatedEffort +
+                        $scope.QSA.estimatedEffort +
+                        $scope.performanceTesting.estimatedEffort +
+                        $scope.integrationTesting.estimatedEffort +
+                        $scope.documentWriting.estimatedEffort;
+            }
+
+            $scope.barColor = function(m, n) {
+                return m >= n ? "progress-success" : "progress-warning";
+            }
+
+            $scope.toDays = function(n) {
                 return Math.round(n / 8 * 100) / 100;
+            }
+
+            getValidEffort = function(collection) {
+                return collection.usedEffort < collection.estimatedEffort ?
+                        collection.usedEffort : collection.estimatedEffort;
             }
         }
     </script>
@@ -102,10 +137,26 @@
                         </tr>
                         <tr>
                             <td>Document</td>
-                            <td>{{effort(document)}}</td>
+                            <td>{{effort(documentWriting)}}</td>
                             <td>
                                 <div class="progress progress-success progress-striped">
-                                    <div class="bar" ng-style="{'width': percentage(document)}">{{percentage(document)}}</div>
+                                    <div class="bar" ng-style="{'width': percentage(documentWriting)}">{{percentage(documentWriting)}}</div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2"><b>Total valuable effort: {{toDays(totalValuableEffort())}} days</b></td>
+                            <td>
+                                <div class="progress {{barColor(validEffortPercentage(), tickBarPercentage(tickBar))}} progress-striped">
+                                    <div class="bar" ng-style="{'width': validEffortPercentage() + '%'}">{{validEffortPercentage() + '%'}}</div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2"><b>Until final release we have {{tickBar.fst - tickBar.snd + 1}} days</b></td>
+                            <td>
+                                <div class="progress progress-info progress-striped">
+                                    <div class="bar" ng-style="{'width': tickBarPercentage(tickBar) + '%'}">{{tickBarPercentage(tickBar) + '%'}}</div>
                                 </div>
                             </td>
                         </tr>
@@ -115,7 +166,7 @@
         </div>
         <div class="row-fluid">
             <div class="span12">
-                <a href="#addReport" role="button" class="btn btn-info" data-toggle="modal">Add Report</a>
+                <a href="#addReport" role="button" class="btn" data-toggle="modal">Add Report</a>
             </div>
         </div>
 

@@ -21,6 +21,7 @@ public class HomeController {
                 put("QSA", reportService.getCollection(QSA)).
                 put("performanceTesting", reportService.getCollection(PerformanceTesting)).
                 put("integrationTesting", reportService.getCollection(IntegrationTesting)).
-                put("document", reportService.getCollection(Document));
+                put("documentWriting", reportService.getCollection(Document)).
+                put("tickBar", reportService.getTickBar());
     }
 }
