@@ -41,19 +41,21 @@
 
             $scope.totalValuableEffort = function() {
                 return getValidEffort($scope.userStory) +
-                        getValidEffort($scope.highLevelDesign) +
-                        getValidEffort($scope.QSA) +
+                        getValidEffort($scope.functionalTesting) +
                         getValidEffort($scope.performanceTesting) +
                         getValidEffort($scope.integrationTesting) +
+                        getValidEffort($scope.QSA) +
+                        getValidEffort($scope.highLevelDesign) +
                         getValidEffort($scope.documentWriting);
             }
 
             $scope.totalEstimation = function() {
                 return $scope.userStory.estimatedEffort +
-                        $scope.highLevelDesign.estimatedEffort +
-                        $scope.QSA.estimatedEffort +
+                        $scope.functionalTesting.estimatedEffort +
                         $scope.performanceTesting.estimatedEffort +
                         $scope.integrationTesting.estimatedEffort +
+                        $scope.QSA.estimatedEffort +
+                        $scope.highLevelDesign.estimatedEffort +
                         $scope.documentWriting.estimatedEffort;
             }
 
@@ -75,16 +77,16 @@
 <body ng-app="bookApp" ng-init='[MODEL_DATA]' ng-controller="Ctrl">
     <div class="container">
         <div class="row-fluid">
-            <div class="span9" style="text-align: center; height: 70px">
+            <div class="span8" style="text-align: center; height: 70px">
                 <h1><a href="/">ILDS Project Status</a></h1>
             </div>
         </div>
         <div class="row-fluid">
-            <div class="span9">
+            <div class="span8">
                 <table class="table">
                     <thead>
                         <tr>
-                            <th class="span3">Team Valuable Activity</th>
+                            <th class="span3">Team Must Activity</th>
                             <th class="span2">Effort (days)</th>
                             <th>Time Slot (%)</th>
                         </tr>
@@ -92,72 +94,88 @@
                     <tbody>
                         <tr>
                             <td>User Story (+ iiNet)</td>
-                            <td>{{effort(userStory)}}</td>
+                            <td><b>{{effort(userStory)}}</b></td>
                             <td>
-                                <div class="progress progress-success progress-striped">
+                                <div class="progress progress-success progress-striped" style="margin-bottom: 0px">
                                     <div class="bar" ng-style="{'width': percentage(userStory)}">{{percentage(userStory)}}</div>
                                 </div>
                             </td>
                         </tr>
                         <tr>
-                            <td>High Level Design</td>
-                            <td>{{effort(highLevelDesign)}}</td>
+                            <td>Functional Test</td>
+                            <td><b>{{effort(functionalTesting)}}</b></td>
                             <td>
-                                <div class="progress progress-success progress-striped">
-                                    <div class="bar" ng-style="{'width': percentage(highLevelDesign)}">{{percentage(highLevelDesign)}}</div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>QSA Work</td>
-                            <td>{{effort(QSA)}}</td>
-                            <td>
-                                <div class="progress progress-success progress-striped">
-                                    <div class="bar" ng-style="{'width': percentage(QSA)}">{{percentage(QSA)}}</div>
+                                <div class="progress progress-success progress-striped" style="margin-bottom: 0px">
+                                    <div class="bar" ng-style="{'width': percentage(functionalTesting)}">{{percentage(functionalTesting)}}</div>
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>Performance Testing</td>
-                            <td>{{effort(performanceTesting)}}</td>
+                            <td><b>{{effort(performanceTesting)}}</b></td>
                             <td>
-                                <div class="progress progress-success progress-striped">
+                                <div class="progress progress-success progress-striped" style="margin-bottom: 0px">
                                     <div class="bar" ng-style="{'width': percentage(performanceTesting)}">{{percentage(performanceTesting)}}</div>
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <td>Integration Testing</td>
-                            <td>{{effort(integrationTesting)}}</td>
+                            <td><b>{{effort(integrationTesting)}}</b></td>
                             <td>
-                                <div class="progress progress-success progress-striped">
+                                <div class="progress progress-success progress-striped" style="margin-bottom: 0px">
                                     <div class="bar" ng-style="{'width': percentage(integrationTesting)}">{{percentage(integrationTesting)}}</div>
                                 </div>
                             </td>
                         </tr>
                         <tr>
-                            <td>Document</td>
-                            <td>{{effort(documentWriting)}}</td>
+                            <td>QSA Work</td>
+                            <td><b>{{effort(QSA)}}</b></td>
                             <td>
-                                <div class="progress progress-success progress-striped">
+                                <div class="progress progress-success progress-striped" style="margin-bottom: 0px">
+                                    <div class="bar" ng-style="{'width': percentage(QSA)}">{{percentage(QSA)}}</div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>High Level Design</td>
+                            <td><b>{{effort(highLevelDesign)}}</b></td>
+                            <td>
+                                <div class="progress progress-success progress-striped" style="margin-bottom: 0px">
+                                    <div class="bar" ng-style="{'width': percentage(highLevelDesign)}">{{percentage(highLevelDesign)}}</div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Document</td>
+                            <td><b>{{effort(documentWriting)}}</b></td>
+                            <td>
+                                <div class="progress progress-success progress-striped" style="margin-bottom: 0px">
                                     <div class="bar" ng-style="{'width': percentage(documentWriting)}">{{percentage(documentWriting)}}</div>
                                 </div>
                             </td>
                         </tr>
-                        <tr>
-                            <td colspan="2"><b>Total valuable effort: {{toDays(totalValuableEffort())}} days</b></td>
+                        <tr class="warning">
+                            <td colspan="2"><b>Total must effort: <span style="color: dodgerblue">{{toDays(totalValuableEffort())}}</span> days</b></td>
                             <td>
-                                <div class="progress {{barColor(validEffortPercentage(), tickBarPercentage(tickBar))}} progress-striped">
+                                <div class="progress {{barColor(validEffortPercentage(), tickBarPercentage(tickBar))}} progress-striped" style="margin-bottom: 0px">
                                     <div class="bar" ng-style="{'width': validEffortPercentage() + '%'}">{{validEffortPercentage() + '%'}}</div>
                                 </div>
                             </td>
                         </tr>
-                        <tr>
-                            <td colspan="2"><b>Until final release we have {{tickBar.fst - tickBar.snd + 1}} days</b></td>
+                        <tr class="warning">
+                            <td colspan="2"><b>Until final release we have <span style="color: dodgerblue">{{tickBar.fst - tickBar.snd + 1}}</span> days</b></td>
                             <td>
-                                <div class="progress progress-info progress-striped">
+                                <div class="progress progress-info progress-striped" style="margin-bottom: 0px">
                                     <div class="bar" ng-style="{'width': tickBarPercentage(tickBar) + '%'}">{{tickBarPercentage(tickBar) + '%'}}</div>
                                 </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="3">
+                                <b>Bug fixing <span style="color: dodgerblue">1 / 60</span> days</b>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+                                <b>Over time <span style="color: dodgerblue">80</span> days</b>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+                                <b>Leave <span style="color: dodgerblue">3 / 120</span> days</b>
                             </td>
                         </tr>
                     </tbody>
@@ -215,13 +233,18 @@
                                 <button class="btn btn-info dropdown-toggle" data-toggle="dropdown">
                                     <span class="caret"></span>
                                 </button>
-                                <ul class="dropdown-menu">
+                                <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
                                     <li><a tabindex="-1" href="#" ng-click="reportType='UserStory'">UserStory</a></li>
+                                    <li><a tabindex="-1" href="#" ng-click="reportType='FunctionalTesting'">FunctionalTesting</a></li>
                                     <li><a tabindex="-1" href="#" ng-click="reportType='HighLevelDesign'">HighLevelDesign</a></li>
                                     <li><a tabindex="-1" href="#" ng-click="reportType='QSA'">QSA</a></li>
                                     <li><a tabindex="-1" href="#" ng-click="reportType='PerformanceTesting'">PerformanceTesting</a></li>
                                     <li><a tabindex="-1" href="#" ng-click="reportType='IntegrationTesting'">IntegrationTesting</a></li>
                                     <li><a tabindex="-1" href="#" ng-click="reportType='Document'">Document</a></li>
+                                    <li class="divider"></li>
+                                    <li><a tabindex="-1" href="#" ng-click="reportType='BugFixing'">BugFixing</a></li>
+                                    <li><a tabindex="-1" href="#" ng-click="reportType='OverTime'">OverTime</a></li>
+                                    <li><a tabindex="-1" href="#" ng-click="reportType='Leave'">Leave</a></li>
                                 </ul>
                             </div>
                         </div>

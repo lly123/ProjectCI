@@ -6,6 +6,7 @@ import org.eclipse.jetty.servlet.ServletHolder;
 
 import static org.eclipse.jetty.servlet.ServletContextHandler.SESSIONS;
 
+//mvn exec:java -Dexec.mainClass="com.freeroom.projectci.Server"
 public class Server {
     public static void main(final String[] args) throws Exception
     {

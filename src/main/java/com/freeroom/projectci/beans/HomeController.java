@@ -17,10 +17,11 @@ public class HomeController {
     {
         return render("html:index.html").
                 put("userStory", reportService.getCollection(UserStory)).
-                put("highLevelDesign", reportService.getCollection(HighLevelDesign)).
-                put("QSA", reportService.getCollection(QSA)).
+                put("functionalTesting", reportService.getCollection(FunctionalTesting)).
                 put("performanceTesting", reportService.getCollection(PerformanceTesting)).
                 put("integrationTesting", reportService.getCollection(IntegrationTesting)).
+                put("QSA", reportService.getCollection(QSA)).
+                put("highLevelDesign", reportService.getCollection(HighLevelDesign)).
                 put("documentWriting", reportService.getCollection(Document)).
                 put("tickBar", reportService.getTickBar());
     }
