@@ -173,9 +173,9 @@
                         </tr>
                         <tr>
                             <td colspan="3">
-                                <b>Bug fixing <span style="color: dodgerblue">1 / 60</span> days</b>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
-                                <b>Over time <span style="color: dodgerblue">80</span> days</b>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
-                                <b>Leave <span style="color: dodgerblue">3 / 120</span> days</b>
+                                <b>Bug fixing <span style="color: orangered">{{toDays(bugFixing.usedEffort)}} / {{toDays(bugFixing.estimatedEffort)}}</span> days</b>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+                                <b>Over time <span style="color: dodgerblue">{{toDays(overTime.usedEffort)}}</span> days</b>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+                                <b>Leave <span style="color: dodgerblue">{{toDays(leave.usedEffort)}} / {{toDays(leave.estimatedEffort)}}</span> days</b>
                             </td>
                         </tr>
                     </tbody>

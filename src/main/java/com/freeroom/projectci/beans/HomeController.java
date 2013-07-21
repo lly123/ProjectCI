@@ -23,6 +23,9 @@ public class HomeController {
                 put("QSA", reportService.getCollection(QSA)).
                 put("highLevelDesign", reportService.getCollection(HighLevelDesign)).
                 put("documentWriting", reportService.getCollection(Document)).
-                put("tickBar", reportService.getTickBar());
+                put("tickBar", reportService.getTickBar()).
+                put("bugFixing", reportService.getCollection(BugFixing)).
+                put("overTime", reportService.getCollection(OverTime)).
+                put("leave", reportService.getCollection(Leave));
     }
 }
