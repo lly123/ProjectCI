@@ -10,7 +10,7 @@ import static org.eclipse.jetty.servlet.ServletContextHandler.SESSIONS;
 public class Server {
     public static void main(final String[] args) throws Exception
     {
-        final org.eclipse.jetty.server.Server server = new org.eclipse.jetty.server.Server(8080);
+        final org.eclipse.jetty.server.Server server = new org.eclipse.jetty.server.Server(9191);
         final ServletContextHandler context = new ServletContextHandler(SESSIONS);
         context.setContextPath("/");
         server.setHandler(context);
