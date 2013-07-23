@@ -17,6 +17,8 @@
         {
             $scope.reportPerson = 'Liyan';
             $scope.reportType = 'UserStory';
+            $scope.signacProject = {};
+            $scope.signacFuncProject = {};
 
             $timeout(function(){$scope.refreshPage();}, 3600 * 1000);
 
@@ -73,11 +75,58 @@
                 $window.location.href = "http://192.168.1.100:9191";
             }
 
+            $scope.signac_ci = function() {
+                $http({method: 'JSONP', url: 'http://192.168.1.111:9090/job/signac/api/json?jsonp=JSON_CALLBACK'}).
+                        success(function(data) {
+                            updateCiStatus(data, $scope.signacProject);
+                        });
+
+                $http({method: 'JSONP', url: 'http://192.168.1.111:9090/job/signac-functional/api/json?jsonp=JSON_CALLBACK'}).
+                        success(function(data) {
+                            updateCiStatus(data, $scope.signacFuncProject);
+                        });
+
+                $timeout(function(){$scope.signac_ci();}, 2 * 1000);
+            }
+
+            updateCiStatus = function(data, project) {
+                var lastBuildPath = data['lastBuild']['url'] + "api/json?jsonp=JSON_CALLBACK";
+
+                $http({method: 'JSONP', url: lastBuildPath}).
+                        success(function(data) {
+                            project.displayName = data['fullDisplayName'];
+
+                            var buildStatus = data['result'];
+                            var duration = data['duration'];
+
+                            if (duration == 0) {
+                                project.color = "progress-info";
+                                project.fontColor = "#ccc";
+                                project.percentage = Math.round(((new Date()).getTime() - data['timestamp']) / data['estimatedDuration'] * 100) + '%';
+                            } else if (buildStatus == 'SUCCESS') {
+                                project.culprit = "";
+                                project.color = "progress-success"
+                                project.fontColor = "#fff";
+                                project.percentage = "100%";
+                            } else if (buildStatus == 'FAILURE') {
+                                project.culprit = "(" + data['culprit']['fullName'] + ")";
+                                project.color = "progress-danger"
+                                project.fontColor = "#fff";
+                                project.percentage = "100%";
+                            } else if (buildStatus == 'ABORTED') {
+                                project.culprit = "";
+                                project.color = "progress-info"
+                                project.fontColor = "#fff";
+                                project.percentage = "100%";
+                            }
+                        });
+            }
+            $scope.signac_ci();
+
             $scope.sonar = function() {
                 $http({method: 'JSONP', url: 'http://192.168.1.111:9000/api/resources?callback=JSON_CALLBACK&resource=org.iata:signac&metrics=ncloc,coverage,function_complexity,duplicated_lines_density,critical_violations,major_violations'}).
                         success(function(data) {
                             var msrs = data[0]['msr'];
-                            console.log(msrs);
                             $scope.ncloc = findMetric(msrs, 'ncloc');
                             $scope.function_complexity = findMetric(msrs, 'function_complexity');
                             $scope.coverage = findMetric(msrs, 'coverage');
@@ -106,206 +155,233 @@
     </script>
 </head>
 <body ng-app="bookApp" ng-init='[MODEL_DATA]' ng-controller="Ctrl">
-    <div class="container">
-        <div class="row-fluid">
-            <div class="span5" style="text-align: center; height: 70px">
-                <h1><a href="/">ILDS Project Status</a></h1>
-            </div>
-            <div class="span2" style="text-align: center; height: 70px">
-                <a href="#addReport" role="button" class="btn" data-toggle="modal">+</a>
-                <a href="#" class="btn" ng-click="refreshPage()">R</a>
-                <a href="#" class="btn" ng-click="sonar()">S</a>
-            </div>
+<div class="container">
+    <div class="row-fluid">
+        <div class="span9" style="text-align: center; height: 70px">
+            <h1><a href="/">ILDS Project Status</a></h1>
         </div>
-        <div class="row-fluid">
-            <div class="span7">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th class="span3">Team Must Activity</th>
-                            <th class="span2">Effort (days)</th>
-                            <th>Time Slot (%)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>User Story (+ iiNet)</td>
-                            <td><b>{{effort(userStory)}}</b></td>
-                            <td>
-                                <div class="progress progress-success progress-striped" style="margin-bottom: 0px">
-                                    <div class="bar" ng-style="{'width': percentage(userStory)}">{{percentage(userStory)}}</div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Functional Test</td>
-                            <td><b>{{effort(functionalTesting)}}</b></td>
-                            <td>
-                                <div class="progress progress-success progress-striped" style="margin-bottom: 0px">
-                                    <div class="bar" ng-style="{'width': percentage(functionalTesting)}">{{percentage(functionalTesting)}}</div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Performance Testing</td>
-                            <td><b>{{effort(performanceTesting)}}</b></td>
-                            <td>
-                                <div class="progress progress-success progress-striped" style="margin-bottom: 0px">
-                                    <div class="bar" ng-style="{'width': percentage(performanceTesting)}">{{percentage(performanceTesting)}}</div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Integration Testing</td>
-                            <td><b>{{effort(integrationTesting)}}</b></td>
-                            <td>
-                                <div class="progress progress-success progress-striped" style="margin-bottom: 0px">
-                                    <div class="bar" ng-style="{'width': percentage(integrationTesting)}">{{percentage(integrationTesting)}}</div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>QSA Work</td>
-                            <td><b>{{effort(QSA)}}</b></td>
-                            <td>
-                                <div class="progress progress-success progress-striped" style="margin-bottom: 0px">
-                                    <div class="bar" ng-style="{'width': percentage(QSA)}">{{percentage(QSA)}}</div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>High Level Design</td>
-                            <td><b>{{effort(highLevelDesign)}}</b></td>
-                            <td>
-                                <div class="progress progress-success progress-striped" style="margin-bottom: 0px">
-                                    <div class="bar" ng-style="{'width': percentage(highLevelDesign)}">{{percentage(highLevelDesign)}}</div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Document</td>
-                            <td><b>{{effort(documentWriting)}}</b></td>
-                            <td>
-                                <div class="progress progress-success progress-striped" style="margin-bottom: 0px">
-                                    <div class="bar" ng-style="{'width': percentage(documentWriting)}">{{percentage(documentWriting)}}</div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr class="warning">
-                            <td colspan="2"><b>Total must effort: <span style="color: dodgerblue">{{toDays(totalValuableEffort())}}</span> days</b></td>
-                            <td>
-                                <div class="progress {{barColor(validEffortPercentage(), tickBarPercentage(tickBar))}} progress-striped" style="margin-bottom: 0px">
-                                    <div class="bar" ng-style="{'width': validEffortPercentage() + '%'}">{{validEffortPercentage() + '%'}}</div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr class="warning">
-                            <td colspan="2"><b>Until final release we have <span style="color: dodgerblue">{{tickBar.fst - tickBar.snd + 1}}</span> days</b></td>
-                            <td>
-                                <div class="progress progress-info progress-striped" style="margin-bottom: 0px">
-                                    <div class="bar" ng-style="{'width': tickBarPercentage(tickBar) + '%'}">{{tickBarPercentage(tickBar) + '%'}}</div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan="3">
-                                <b>Bug fixing <span style="color: orangered">{{toDays(bugFixing.usedEffort)}} / {{toDays(bugFixing.estimatedEffort)}}</span> days</b>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
-                                <b>Over time <span style="color: dodgerblue">{{toDays(overTime.usedEffort)}}</span> days</b>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
-                                <b>Leave <span style="color: dodgerblue">{{toDays(leave.usedEffort)}} / {{toDays(leave.estimatedEffort)}}</span> days</b>
-                            </td>
-                        </tr>
-                        <tr class="info">
-                            <td colspan="3" style="text-align: center">
-                                <h3>Lines of code: <span style="color: limegreen">{{ncloc}}</span>&nbsp;&nbsp;|&nbsp;&nbsp;Coverage: <span style="color: orangered">{{coverage}}%</span></h3>
-                                <h3>Critical: <span style="color: orangered">{{critical_violations}}</span>&nbsp;&nbsp;|&nbsp;&nbsp;Major: <span style="color: orangered">{{major_violations}}</span></h3>
-                                <h3>Complexity: <span style="color: orangered">{{function_complexity}}</span>&nbsp;&nbsp;|&nbsp;&nbsp;Duplication: <span style="color: orangered">{{duplicated_lines_density}}</span></h3>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+        <div class="span3" style="text-align: center; height: 70px">
+            <a href="#addReport" role="button" class="btn" data-toggle="modal">+</a>
+            <a href="#" class="btn" ng-click="refreshPage()">R</a>
+            <a href="#" class="btn" ng-click="sonar()">S</a>
+            <a href="#" class="btn" ng-click="signac_ci()">C</a>
         </div>
-
-        <form class="form-horizontal" action="/report/create" method="post">
-            <input type="hidden" name="report_date" value="{{parseReportDateStr()}}"/>
-
-            <div id="addReport" class="modal hide fade" tabindex="-1" role="dialog">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h3>Add Report</h3>
-                </div>
-                <div class="modal-body">
-                    <div class="control-group">
-                        <label class="control-label" for="reportDate">Report Date</label>
-                        <div class="controls">
-                            <input type="text" id="reportDate" ng-model="reportDateStr" placeholder="Report Date" required/>
-                        </div>
-                    </div>
-                    <div class="control-group">
-                        <label class="control-label">Person</label>
-                        <div class="controls">
-                            <input type="hidden" name="report_person" value="{{reportPerson}}"/>
-                            <div class="btn-group">
-                                <button class="btn btn-info">{{reportPerson}}</button>
-                                <button class="btn btn-info dropdown-toggle" data-toggle="dropdown">
-                                    <span class="caret"></span>
-                                </button>
-                                <ul class="dropdown-menu">
-                                    <li><a tabindex="-1" href="#" ng-click="reportPerson='Liyan'">Liyan</a></li>
-                                    <li><a tabindex="-1" href="#" ng-click="reportPerson='Shaobo'">Shaobo</a></li>
-                                    <li><a tabindex="-1" href="#" ng-click="reportPerson='LiBin'">LiBin</a></li>
-                                    <li><a tabindex="-1" href="#" ng-click="reportPerson='XuWei'">XuWei</a></li>
-                                    <li><a tabindex="-1" href="#" ng-click="reportPerson='Jack'">Jack</a></li>
-                                    <li><a tabindex="-1" href="#" ng-click="reportPerson='Jacky'">Jacky</a></li>
-                                    <li><a tabindex="-1" href="#" ng-click="reportPerson='Nancy'">Nancy</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="control-group">
-                        <label class="control-label">Report Type</label>
-                        <div class="controls">
-                            <input type="hidden" name="report_type" value="{{reportType}}"/>
-                            <div class="btn-group">
-                                <button class="btn btn-info">{{reportType}}</button>
-                                <button class="btn btn-info dropdown-toggle" data-toggle="dropdown">
-                                    <span class="caret"></span>
-                                </button>
-                                <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-                                    <li><a tabindex="-1" href="#" ng-click="reportType='UserStory'">UserStory</a></li>
-                                    <li><a tabindex="-1" href="#" ng-click="reportType='FunctionalTesting'">FunctionalTesting</a></li>
-                                    <li><a tabindex="-1" href="#" ng-click="reportType='HighLevelDesign'">HighLevelDesign</a></li>
-                                    <li><a tabindex="-1" href="#" ng-click="reportType='QSA'">QSA</a></li>
-                                    <li><a tabindex="-1" href="#" ng-click="reportType='PerformanceTesting'">PerformanceTesting</a></li>
-                                    <li><a tabindex="-1" href="#" ng-click="reportType='IntegrationTesting'">IntegrationTesting</a></li>
-                                    <li><a tabindex="-1" href="#" ng-click="reportType='Document'">Document</a></li>
-                                    <li class="divider"></li>
-                                    <li><a tabindex="-1" href="#" ng-click="reportType='BugFixing'">BugFixing</a></li>
-                                    <li><a tabindex="-1" href="#" ng-click="reportType='OverTime'">OverTime</a></li>
-                                    <li><a tabindex="-1" href="#" ng-click="reportType='Leave'">Leave</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="control-group">
-                        <label class="control-label" for="hours">Hours</label>
-                        <div class="controls">
-                            <input type="text" id="hours" name="report_hours" placeholder="Hours" required/>
-                        </div>
-                    </div>
-                    <div class="control-group">
-                        <label class="control-label" for="comment">Comment</label>
-                        <div class="controls">
-                            <input type="text" id="comment" name="report_comment" placeholder="Comment" required/>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-primary" type="submit">Add</button>
-                    <button class="btn" data-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </form>
     </div>
+    <div class="row-fluid">
+        <div class="span9">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th class="span3">Team Must Activity</th>
+                    <th class="span2">Effort (days)</th>
+                    <th>Time Slot (%)</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>User Story (+ iiNet)</td>
+                    <td><b>{{effort(userStory)}}</b></td>
+                    <td>
+                        <div class="progress progress-success progress-striped" style="margin-bottom: 0px">
+                            <div class="bar" ng-style="{'width': percentage(userStory)}">{{percentage(userStory)}}</div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Functional Test</td>
+                    <td><b>{{effort(functionalTesting)}}</b></td>
+                    <td>
+                        <div class="progress progress-success progress-striped" style="margin-bottom: 0px">
+                            <div class="bar" ng-style="{'width': percentage(functionalTesting)}">{{percentage(functionalTesting)}}</div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Performance Testing</td>
+                    <td><b>{{effort(performanceTesting)}}</b></td>
+                    <td>
+                        <div class="progress progress-success progress-striped" style="margin-bottom: 0px">
+                            <div class="bar" ng-style="{'width': percentage(performanceTesting)}">{{percentage(performanceTesting)}}</div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Integration Testing</td>
+                    <td><b>{{effort(integrationTesting)}}</b></td>
+                    <td>
+                        <div class="progress progress-success progress-striped" style="margin-bottom: 0px">
+                            <div class="bar" ng-style="{'width': percentage(integrationTesting)}">{{percentage(integrationTesting)}}</div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>QSA Work</td>
+                    <td><b>{{effort(QSA)}}</b></td>
+                    <td>
+                        <div class="progress progress-success progress-striped" style="margin-bottom: 0px">
+                            <div class="bar" ng-style="{'width': percentage(QSA)}">{{percentage(QSA)}}</div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>High Level Design</td>
+                    <td><b>{{effort(highLevelDesign)}}</b></td>
+                    <td>
+                        <div class="progress progress-success progress-striped" style="margin-bottom: 0px">
+                            <div class="bar" ng-style="{'width': percentage(highLevelDesign)}">{{percentage(highLevelDesign)}}</div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Document</td>
+                    <td><b>{{effort(documentWriting)}}</b></td>
+                    <td>
+                        <div class="progress progress-success progress-striped" style="margin-bottom: 0px">
+                            <div class="bar" ng-style="{'width': percentage(documentWriting)}">{{percentage(documentWriting)}}</div>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="warning">
+                    <td colspan="2"><b>Total must effort: <span style="color: dodgerblue">{{toDays(totalValuableEffort())}}</span> days</b></td>
+                    <td>
+                        <div class="progress {{barColor(validEffortPercentage(), tickBarPercentage(tickBar))}} progress-striped" style="margin-bottom: 0px">
+                            <div class="bar" ng-style="{'width': validEffortPercentage() + '%'}">{{validEffortPercentage() + '%'}}</div>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="warning">
+                    <td colspan="2"><b>Until final release we have <span style="color: dodgerblue">{{tickBar.fst - tickBar.snd + 1}}</span> days</b></td>
+                    <td>
+                        <div class="progress progress-info progress-striped" style="margin-bottom: 0px">
+                            <div class="bar" ng-style="{'width': tickBarPercentage(tickBar) + '%'}">{{tickBarPercentage(tickBar) + '%'}}</div>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="span3">
+            <br/>
+            <br/>
+            <table class="table">
+                <tbody>
+                <tr class="warning">
+                    <td>
+                        <h5>Bug fixing <span style="color: orangered">{{toDays(bugFixing.usedEffort)}} / {{toDays(bugFixing.estimatedEffort)}}</span> days</h5>
+                        <h5>Over time <span style="color: dodgerblue">{{toDays(overTime.usedEffort)}}</span> days</h5>
+                        <h5>Leave <span style="color: dodgerblue">{{toDays(leave.usedEffort)}} / {{toDays(leave.estimatedEffort)}}</span> days</h5>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <h4>Lines of code: <span style="color: limegreen">{{ncloc}}</span></h4>
+            <h4>Coverage: <span style="color: orangered">{{coverage}}%</span></h4>
+            <h4>Critical: <span style="color: orangered">{{critical_violations}}</span></h4>
+            <h4>Major: <span style="color: orangered">{{major_violations}}</span></h4>
+            <h4>Complexity: <span style="color: orangered">{{function_complexity}}</span></h4>
+            <h4>Duplication: <span style="color: orangered">{{duplicated_lines_density}}%</span></h4>
+        </div>
+    </div>
+    <div class="row-fluid">
+        <div class="span12">
+            <div class="progress {{signacProject.color}}" style="height: 70px">
+                <div class="bar" ng-style="{'width': signacProject.percentage, 'white-space': 'nowrap', 'color': signacProject.fontColor}">
+                    <h1>{{signacProject.displayName}} {{signacProject.culprit}}</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row-fluid">
+        <div class="span12">
+            <div class="progress {{signacFuncProject.color}}" style="height: 70px">
+                <div class="bar" ng-style="{'width': signacFuncProject.percentage, 'white-space': 'nowrap', 'color': signacFuncProject.fontColor}">
+                    <h1>{{signacFuncProject.displayName}} {{signacFuncProject.culprit}}</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form class="form-horizontal" action="/report/create" method="post">
+        <input type="hidden" name="report_date" value="{{parseReportDateStr()}}"/>
+
+        <div id="addReport" class="modal hide fade" tabindex="-1" role="dialog">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h3>Add Report</h3>
+            </div>
+            <div class="modal-body">
+                <div class="control-group">
+                    <label class="control-label" for="reportDate">Report Date</label>
+                    <div class="controls">
+                        <input type="text" id="reportDate" ng-model="reportDateStr" placeholder="Report Date" required/>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">Person</label>
+                    <div class="controls">
+                        <input type="hidden" name="report_person" value="{{reportPerson}}"/>
+                        <div class="btn-group">
+                            <button class="btn btn-info">{{reportPerson}}</button>
+                            <button class="btn btn-info dropdown-toggle" data-toggle="dropdown">
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a tabindex="-1" href="#" ng-click="reportPerson='Liyan'">Liyan</a></li>
+                                <li><a tabindex="-1" href="#" ng-click="reportPerson='Shaobo'">Shaobo</a></li>
+                                <li><a tabindex="-1" href="#" ng-click="reportPerson='LiBin'">LiBin</a></li>
+                                <li><a tabindex="-1" href="#" ng-click="reportPerson='XuWei'">XuWei</a></li>
+                                <li><a tabindex="-1" href="#" ng-click="reportPerson='Jack'">Jack</a></li>
+                                <li><a tabindex="-1" href="#" ng-click="reportPerson='Jacky'">Jacky</a></li>
+                                <li><a tabindex="-1" href="#" ng-click="reportPerson='Nancy'">Nancy</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">Report Type</label>
+                    <div class="controls">
+                        <input type="hidden" name="report_type" value="{{reportType}}"/>
+                        <div class="btn-group">
+                            <button class="btn btn-info">{{reportType}}</button>
+                            <button class="btn btn-info dropdown-toggle" data-toggle="dropdown">
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                                <li><a tabindex="-1" href="#" ng-click="reportType='UserStory'">UserStory</a></li>
+                                <li><a tabindex="-1" href="#" ng-click="reportType='FunctionalTesting'">FunctionalTesting</a></li>
+                                <li><a tabindex="-1" href="#" ng-click="reportType='HighLevelDesign'">HighLevelDesign</a></li>
+                                <li><a tabindex="-1" href="#" ng-click="reportType='QSA'">QSA</a></li>
+                                <li><a tabindex="-1" href="#" ng-click="reportType='PerformanceTesting'">PerformanceTesting</a></li>
+                                <li><a tabindex="-1" href="#" ng-click="reportType='IntegrationTesting'">IntegrationTesting</a></li>
+                                <li><a tabindex="-1" href="#" ng-click="reportType='Document'">Document</a></li>
+                                <li class="divider"></li>
+                                <li><a tabindex="-1" href="#" ng-click="reportType='BugFixing'">BugFixing</a></li>
+                                <li><a tabindex="-1" href="#" ng-click="reportType='OverTime'">OverTime</a></li>
+                                <li><a tabindex="-1" href="#" ng-click="reportType='Leave'">Leave</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="hours">Hours</label>
+                    <div class="controls">
+                        <input type="text" id="hours" name="report_hours" placeholder="Hours" required/>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="comment">Comment</label>
+                    <div class="controls">
+                        <input type="text" id="comment" name="report_comment" placeholder="Comment" required/>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" type="submit">Add</button>
+                <button class="btn" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </form>
+</div>
 </body>
 </html>
