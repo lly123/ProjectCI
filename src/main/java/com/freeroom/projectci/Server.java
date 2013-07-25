@@ -7,6 +7,7 @@ import org.eclipse.jetty.servlet.ServletHolder;
 import static org.eclipse.jetty.servlet.ServletContextHandler.SESSIONS;
 
 //mvn exec:java -Dexec.mainClass="com.freeroom.projectci.Server"
+//java -cp ./hsqldb-2.2.9.jar org.hsqldb.util.DatabaseManagerSwing
 public class Server {
     public static void main(final String[] args) throws Exception
     {

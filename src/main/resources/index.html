@@ -109,7 +109,7 @@
                                 project.fontColor = "#fff";
                                 project.percentage = "100%";
                             } else if (buildStatus == 'FAILURE') {
-                                project.culprit = "(" + data['culprit']['fullName'] + ")";
+                                project.culprit = "(" + data['culprits'][0]['fullName'] + ")";
                                 project.color = "progress-danger"
                                 project.fontColor = "#fff";
                                 project.percentage = "100%";
@@ -124,7 +124,7 @@
             $scope.signac_ci();
 
             $scope.sonar = function() {
-                $http({method: 'JSONP', url: 'http://192.168.1.111:9000/api/resources?callback=JSON_CALLBACK&resource=org.iata:signac&metrics=ncloc,coverage,function_complexity,duplicated_lines_density,critical_violations,major_violations'}).
+                $http({method: 'JSONP', url: 'http://192.168.1.111:9000/api/resources?callback=JSON_CALLBACK&resource=org.iata:signac&metrics=ncloc,coverage,function_complexity,duplicated_lines_density,critical_violations,major_violations,package_tangles'}).
                         success(function(data) {
                             var msrs = data[0]['msr'];
                             $scope.ncloc = findMetric(msrs, 'ncloc');
@@ -133,6 +133,7 @@
                             $scope.duplicated_lines_density = findMetric(msrs, 'duplicated_lines_density');
                             $scope.critical_violations = findMetric(msrs, 'critical_violations');
                             $scope.major_violations = findMetric(msrs, 'major_violations');
+                            $scope.package_tangles = findMetric(msrs, 'package_tangles');
                         });
             }
             $scope.sonar();
@@ -262,7 +263,6 @@
         </div>
         <div class="span3">
             <br/>
-            <br/>
             <table class="table">
                 <tbody>
                 <tr class="warning">
@@ -281,6 +281,7 @@
             <h4>Major: <span style="color: orangered">{{major_violations}}</span></h4>
             <h4>Complexity: <span style="color: orangered">{{function_complexity}}</span></h4>
             <h4>Duplication: <span style="color: orangered">{{duplicated_lines_density}}%</span></h4>
+            <h4>Package tangle: <span style="color: orangered">{{package_tangles}}%</span></h4>
         </div>
     </div>
     <div class="row-fluid">
