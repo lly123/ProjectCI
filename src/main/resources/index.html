@@ -174,7 +174,7 @@
                 <thead>
                 <tr>
                     <th class="span3">Team Must Activity</th>
-                    <th class="span2">Effort (days)</th>
+                    <th class="span2">Effort (PD)</th>
                     <th>Time Slot (%)</th>
                 </tr>
                 </thead>
@@ -243,7 +243,7 @@
                     </td>
                 </tr>
                 <tr class="warning">
-                    <td colspan="2"><b>Total must effort: <span style="color: dodgerblue">{{toDays(totalValuableEffort())}}</span> days</b></td>
+                    <td colspan="2"><b>Total must effort: <span style="color: dodgerblue">{{toDays(totalValuableEffort())}}</span> PD</b></td>
                     <td>
                         <div class="progress {{barColor(validEffortPercentage(), tickBarPercentage(tickBar))}} progress-striped" style="margin-bottom: 0px">
                             <div class="bar" ng-style="{'width': validEffortPercentage() + '%'}">{{validEffortPercentage() + '%'}}</div>
@@ -251,7 +251,7 @@
                     </td>
                 </tr>
                 <tr class="warning">
-                    <td colspan="2"><b>Until final release we have <span style="color: dodgerblue">{{tickBar.fst - tickBar.snd + 1}}</span> days</b></td>
+                    <td colspan="2"><b>Until final release we have <span style="color: dodgerblue">{{tickBar.fst - tickBar.snd + 1}}</span> PD</b></td>
                     <td>
                         <div class="progress progress-info progress-striped" style="margin-bottom: 0px">
                             <div class="bar" ng-style="{'width': tickBarPercentage(tickBar) + '%'}">{{tickBarPercentage(tickBar) + '%'}}</div>
@@ -267,9 +267,9 @@
                 <tbody>
                 <tr class="warning">
                     <td>
-                        <h5>Bug fixing <span style="color: orangered">{{toDays(bugFixing.usedEffort)}} / {{toDays(bugFixing.estimatedEffort)}}</span> days</h5>
-                        <h5>Over time <span style="color: dodgerblue">{{toDays(overTime.usedEffort)}}</span> days</h5>
-                        <h5>Leave <span style="color: dodgerblue">{{toDays(leave.usedEffort)}} / {{toDays(leave.estimatedEffort)}}</span> days</h5>
+                        <h5>Bug fixing <span style="color: orangered">{{toDays(bugFixing.usedEffort)}} / {{toDays(bugFixing.estimatedEffort)}}</span> PD</h5>
+                        <h5>Over time <span style="color: dodgerblue">{{toDays(overTime.usedEffort)}}</span> PD</h5>
+                        <h5>Leave <span style="color: dodgerblue">{{toDays(leave.usedEffort)}} / {{toDays(leave.estimatedEffort)}}</span> PD</h5>
                     </td>
                 </tr>
                 </tbody>
