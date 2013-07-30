@@ -25,7 +25,7 @@ public class ReportService {
 
     public Pair<Integer, Integer> getTickBar() {
         final DateTime now = new DateTime();
-        final DateTime begin = new DateTime(2013, 6, 4, 0, 0, 0);
+        final DateTime begin = new DateTime(2013, 7, 23, 0, 0, 0);
         final DateTime end = new DateTime(2013, 12, 30, 0, 0, 0);
 
         return Pair.of(Days.daysBetween(begin, end).getDays(), Days.daysBetween(begin, now).getDays());
