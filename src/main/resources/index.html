@@ -76,12 +76,12 @@
             }
 
             $scope.signac_ci = function() {
-                $http({method: 'JSONP', url: 'http://192.168.1.111:9090/job/signac/api/json?jsonp=JSON_CALLBACK'}).
+                $http({method: 'JSONP', url: 'http://192.168.1.11:9090/job/signac/api/json?jsonp=JSON_CALLBACK'}).
                         success(function(data) {
                             updateCiStatus(data, $scope.signacProject);
                         });
 
-                $http({method: 'JSONP', url: 'http://192.168.1.111:9090/job/signac-functional/api/json?jsonp=JSON_CALLBACK'}).
+                $http({method: 'JSONP', url: 'http://192.168.1.11:9090/job/signac-functional/api/json?jsonp=JSON_CALLBACK'}).
                         success(function(data) {
                             updateCiStatus(data, $scope.signacFuncProject);
                         });
@@ -124,7 +124,7 @@
             $scope.signac_ci();
 
             $scope.sonar = function() {
-                $http({method: 'JSONP', url: 'http://192.168.1.111:9000/api/resources?callback=JSON_CALLBACK&resource=org.iata:signac&metrics=ncloc,coverage,function_complexity,duplicated_lines_density,critical_violations,major_violations,package_tangles'}).
+                $http({method: 'JSONP', url: 'http://192.168.1.11:9000/api/resources?callback=JSON_CALLBACK&resource=org.iata:signac&metrics=ncloc,coverage,function_complexity,duplicated_lines_density,critical_violations,major_violations,package_tangle_index'}).
                         success(function(data) {
                             var msrs = data[0]['msr'];
                             $scope.ncloc = findMetric(msrs, 'ncloc');
@@ -133,7 +133,7 @@
                             $scope.duplicated_lines_density = findMetric(msrs, 'duplicated_lines_density');
                             $scope.critical_violations = findMetric(msrs, 'critical_violations');
                             $scope.major_violations = findMetric(msrs, 'major_violations');
-                            $scope.package_tangles = findMetric(msrs, 'package_tangles');
+                            $scope.package_tangle_index = findMetric(msrs, 'package_tangle_index');
                         });
             }
             $scope.sonar();
@@ -276,12 +276,12 @@
             </table>
 
             <h4>Lines of code: <span style="color: limegreen">{{ncloc}}</span></h4>
-            <h4>Coverage: <span style="color: orangered">{{coverage}}%</span></h4>
+            <h4>Coverage: <span style="color: orangered">{{coverage}} %</span></h4>
             <h4>Critical: <span style="color: orangered">{{critical_violations}}</span></h4>
             <h4>Major: <span style="color: orangered">{{major_violations}}</span></h4>
             <h4>Complexity: <span style="color: orangered">{{function_complexity}}</span></h4>
-            <h4>Duplication: <span style="color: orangered">{{duplicated_lines_density}}%</span></h4>
-            <h4>Package tangle: <span style="color: orangered">{{package_tangles}}%</span></h4>
+            <h4>Duplication: <span style="color: orangered">{{duplicated_lines_density}} %</span></h4>
+            <h4>Package tangle: <span style="color: orangered">{{package_tangle_index}} %</span></h4>
         </div>
     </div>
     <div class="row-fluid">
