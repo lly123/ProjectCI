@@ -108,6 +108,7 @@
                                 project.color = "progress-success"
                                 project.fontColor = "#fff";
                                 project.percentage = "100%";
+                                $scope.sonar();
                             } else if (buildStatus == 'FAILURE') {
                                 project.culprit = "(" + data['culprits'][0]['fullName'] + ")";
                                 project.color = "progress-danger"
