@@ -15,24 +15,6 @@
             stroke: #000;
             shape-rendering: crispEdges;
         }
-
-        .x.axis path {
-            display: none;
-        }
-
-        .area.above {
-            fill: rgb(252,141,89);
-        }
-
-        .area.below {
-            fill: rgb(145,207,96);
-        }
-
-        .line {
-            fill: none;
-            stroke: #000;
-            stroke-width: 1.5px;
-        }
     </style>
 
     <script type="text/javascript">
@@ -194,15 +176,20 @@
     <div class="row-fluid">
         <div class="span12">
             <table class="table">
+                <thead>
+                    <th class="span3"></th>
+                    <th class="span2"></th>
+                    <th class="span7"></th>
+                </thead>
                 <tbody>
                     <tr>
-                        <td class="span3" style="text-align: center">
+                        <td style="text-align: center">
                             <b>User Story (+ iiNet)</b>
                         </td>
-                        <td class="span2">
+                        <td>
                             <b><span style="color: dodgerblue">{{effort(userStory)}}</span></b>
                         </td>
-                        <td class="span7">
+                        <td>
                             <div class="progress progress-success progress-striped" style="margin-bottom: 0px">
                                 <div class="bar" ng-style="{'width': percentage(userStory)}">{{percentage(userStory)}}</div>
                             </div>
@@ -371,12 +358,10 @@
     </form>
 </div>
 
-
-
 <script type="text/javascript">
     var margin = {top: 20, right: 20, bottom: 30, left: 30},
             width = 960 - margin.left - margin.right,
-            height = 150 - margin.top - margin.bottom;
+            height = 120 - margin.top - margin.bottom;
 
     var parseDate = d3.time.format("%Y%m%d").parse;
 
@@ -386,23 +371,24 @@
     var y = d3.scale.linear()
             .range([height, 0]);
 
+    var color = d3.scale.ordinal().range(['rgb(145,207,96)', 'rgb(252,141,89)']);
+
     var xAxis = d3.svg.axis()
             .scale(x)
             .orient("bottom");
 
     var yAxis = d3.svg.axis()
             .scale(y)
-            .orient("left").tickValues([0, 10, 20, 30, 40]);
-
-    var line = d3.svg.area()
-            .interpolate("basis")
-            .x(function(d) { return x(d.date); })
-            .y(function(d) { return y(d["Must"]); });
+            .orient("left").tickValues([0, 0.5, 1.0]);
 
     var area = d3.svg.area()
             .interpolate("basis")
             .x(function(d) { return x(d.date); })
-            .y1(function(d) { return y(d["Must"]); });
+            .y0(function(d) { return y(d.y0); })
+            .y1(function(d) { return y(d.y0 + d.y); });
+
+    var stack = d3.layout.stack()
+            .values(function(d) { return d.values; });
 
     var svg = d3.select("#utilityChart").append("svg")
             .attr("width", width + margin.left + margin.right)
@@ -411,42 +397,32 @@
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     d3.tsv("/report/utilityData", function(error, data) {
+        color.domain(d3.keys(data[0]).filter(function(key) { return key !== "date"; }));
+
         data.forEach(function(d) {
             d.date = parseDate(d.date);
         });
 
+        var utilityData = stack(color.domain().map(function(name) {
+            return {
+                name: name,
+                values: data.map(function(d) {
+                    return {date: d.date, y: d[name] / 56};
+                })
+            };
+        }));
+
         x.domain(d3.extent(data, function(d) { return d.date; }));
 
-        y.domain([
-            d3.min(data, function(d) { return Math.min(d["Must"], d["Others"]); }),
-            d3.max(data, function(d) { return Math.max(d["Must"], d["Others"]); })
-        ]);
+        var utility = svg.selectAll(".utility")
+                .data(utilityData)
+                .enter().append("g")
+                .attr("class", "utility");
 
-        svg.datum(data);
-
-        svg.append("clipPath")
-                .attr("id", "clip-below")
-                .append("path")
-                .attr("d", area.y0(height));
-
-        svg.append("clipPath")
-                .attr("id", "clip-above")
-                .append("path")
-                .attr("d", area.y0(0));
-
-        svg.append("path")
-                .attr("class", "area above")
-                .attr("clip-path", "url(#clip-above)")
-                .attr("d", area.y0(function(d) { return y(d["Others"]); }));
-
-        svg.append("path")
-                .attr("class", "area below")
-                .attr("clip-path", "url(#clip-below)")
-                .attr("d", area);
-
-        svg.append("path")
-                .attr("class", "line")
-                .attr("d", line);
+        utility.append("path")
+                .attr("class", "area")
+                .attr("d", function(d) { return area(d.values); })
+                .style("fill", function(d) { return color(d.name); });
 
         svg.append("g")
                 .attr("class", "x axis")
@@ -461,7 +437,7 @@
                 .attr("y", 6)
                 .attr("dy", ".71em")
                 .style("text-anchor", "end")
-                .text("Utility");
+                .text("Utility %");
     });
 </script>
 
