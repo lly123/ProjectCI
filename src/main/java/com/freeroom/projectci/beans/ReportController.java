@@ -4,6 +4,9 @@ import com.freeroom.di.annotations.Bean;
 import com.freeroom.di.annotations.Inject;
 import com.freeroom.web.Model;
 
+import static com.freeroom.projectci.beans.ReportType.UserStory;
+import static com.freeroom.web.Model.render;
+
 @Bean
 public class ReportController {
 
@@ -19,5 +22,11 @@ public class ReportController {
             reportService.addReport(report);
         }
         return homeController.index();
+    }
+
+    public Model utilityData()
+    {
+        return render("text").
+                put("content", reportService.utilityData());
     }
 }

@@ -6,6 +6,8 @@ import org.eclipse.jetty.servlet.ServletHolder;
 
 import static org.eclipse.jetty.servlet.ServletContextHandler.SESSIONS;
 
+//export GIT_SSL_NO_VERIFY=1
+//export JAVA_HOME=/home/twer/Apps/jdk1.8.0
 //mvn exec:java -Dexec.mainClass="com.freeroom.projectci.Server"
 //java -cp ./hsqldb-2.2.9.jar org.hsqldb.util.DatabaseManagerSwing
 public class Server {

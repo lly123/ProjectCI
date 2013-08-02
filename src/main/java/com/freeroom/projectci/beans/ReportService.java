@@ -6,9 +6,12 @@ import com.freeroom.persistence.Athena;
 import com.freeroom.util.Pair;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import java.util.List;
 
+import static com.freeroom.projectci.beans.ReportType.*;
 import static java.lang.String.format;
 
 @Bean
@@ -41,5 +44,28 @@ public class ReportService {
             usedEffort += ((TimeReport) report).getHours();
         }
         return usedEffort;
+    }
+
+    public String utilityData() {
+        final DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyyMMdd");
+        DateTime date = new DateTime(2013, 7, 23, 0, 0, 0);
+
+        final StringBuilder sb = new StringBuilder();
+        sb.append("date\tMust\tOthers\r\n");
+
+        while(date.isBeforeNow()) {
+            final List<Object> mustReports = athena.from(TimeReport.class).find(
+                    format("date='%s' and (type='%s' or type='%s' or type='%s' or type='%s' or type='%s' or type='%s' or type='%s')",
+                            date.toDate().getTime(), UserStory, FunctionalTesting, PerformanceTesting, IntegrationTesting, QSA, HighLevelDesign, Document));
+
+            final List<Object> othersReports = athena.from(TimeReport.class).find(
+                    format("date='%s' and (type='%s' or type='%s' or type='%s' or type='%s')",
+                            date.toDate().getTime(), OverTime, BugFixing, Leave, Others));
+
+            sb.append(format("%s\t%d\t%d\r\n", formatter.print(date), calculateUsedEffort(mustReports), calculateUsedEffort(othersReports)));
+            date = date.plusDays(1);
+        }
+
+        return sb.toString();
     }
 }

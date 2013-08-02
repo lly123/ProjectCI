@@ -26,6 +26,7 @@ public class HomeController {
                 put("tickBar", reportService.getTickBar()).
                 put("bugFixing", reportService.getCollection(BugFixing)).
                 put("overTime", reportService.getCollection(OverTime)).
-                put("leave", reportService.getCollection(Leave));
+                put("leave", reportService.getCollection(Leave)).
+                put("others", reportService.getCollection(Others));
     }
 }
