@@ -48,12 +48,13 @@ public class ReportService {
 
     public String utilityData() {
         final DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyyMMdd");
+        final DateTime yesterday = new DateTime().minusDays(1);
         DateTime date = new DateTime(2013, 7, 23, 0, 0, 0);
 
         final StringBuilder sb = new StringBuilder();
         sb.append("date\tMust\tOthers\r\n");
 
-        while(date.isBeforeNow()) {
+        while(date.isBefore(yesterday)) {
             final List<Object> mustReports = athena.from(TimeReport.class).find(
                     format("date='%s' and (type='%s' or type='%s' or type='%s' or type='%s' or type='%s' or type='%s' or type='%s')",
                             date.toDate().getTime(), UserStory, FunctionalTesting, PerformanceTesting, IntegrationTesting, QSA, HighLevelDesign, Document));
