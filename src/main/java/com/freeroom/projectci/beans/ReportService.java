@@ -63,7 +63,9 @@ public class ReportService {
                     format("date='%s' and (type='%s' or type='%s' or type='%s' or type='%s')",
                             date.toDate().getTime(), OverTime, BugFixing, Leave, Others));
 
-            sb.append(format("%s\t%d\t%d\r\n", formatter.print(date), calculateUsedEffort(mustReports), calculateUsedEffort(othersReports)));
+            if (mustReports.size() > 0 || othersReports.size() > 0) {
+                sb.append(format("%s\t%d\t%d\r\n", formatter.print(date), calculateUsedEffort(mustReports), calculateUsedEffort(othersReports)));
+            }
             date = date.plusDays(1);
         }
 
