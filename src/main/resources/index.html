@@ -29,7 +29,6 @@
             $scope.reportType = 'UserStory';
             $scope.signacProject = {};
             $scope.signacFuncProject = {};
-            $scope.lastFailed = false;
 
             $timeout(function(){$scope.refreshPage();}, 3600 * 1000);
 
@@ -111,7 +110,7 @@
                             var duration = data['duration'];
 
                             if (duration == 0) {
-                                project.color = $scope.lastFailed ? "progress-danger" : "progress-info";
+                                project.color = project.lastFailed ? "progress-danger" : "progress-info";
                                 project.fontColor = "#ccc";
                                 project.percentage = Math.round(((new Date()).getTime() - data['timestamp']) / data['estimatedDuration'] * 100) + '%';
                             } else if (buildStatus == 'SUCCESS') {
@@ -119,14 +118,14 @@
                                 project.color = "progress-success"
                                 project.fontColor = "#fff";
                                 project.percentage = "100%";
-                                $scope.lastFailed = false;
+                                project.lastFailed = false;
                                 $scope.sonar();
                             } else if (buildStatus == 'FAILURE') {
                                 project.culprit = "(" + data['culprits'][0]['fullName'] + ")";
                                 project.color = "progress-danger"
                                 project.fontColor = "#fff";
                                 project.percentage = "100%";
-                                $scope.lastFailed = true;
+                                project.lastFailed = true;
                             } else if (buildStatus == 'ABORTED') {
                                 project.culprit = "";
                                 project.color = "progress-info"
