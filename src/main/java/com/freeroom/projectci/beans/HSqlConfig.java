@@ -14,7 +14,7 @@ public class HSqlConfig implements DBConfig {
         properties.setProperty("url", "jdbc:hsqldb:file:iataprojectci");
         properties.setProperty("username", "sa");
         properties.setProperty("password", "");
-        properties.setProperty("blockSize", "2");
+        properties.setProperty("blockSize", "10");
         return properties;
     }
 }
