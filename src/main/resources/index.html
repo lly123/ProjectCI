@@ -58,8 +58,6 @@
                         getValidEffort($scope.functionalTesting) +
                         getValidEffort($scope.performanceTesting) +
                         getValidEffort($scope.integrationTesting) +
-                        getValidEffort($scope.QSA) +
-                        getValidEffort($scope.highLevelDesign) +
                         getValidEffort($scope.documentWriting);
             }
 
@@ -68,8 +66,6 @@
                         $scope.functionalTesting.estimatedEffort +
                         $scope.performanceTesting.estimatedEffort +
                         $scope.integrationTesting.estimatedEffort +
-                        $scope.QSA.estimatedEffort +
-                        $scope.highLevelDesign.estimatedEffort +
                         $scope.documentWriting.estimatedEffort;
             }
 
@@ -82,16 +78,16 @@
             }
 
             $scope.refreshPage = function() {
-                $window.location.href = "http://llypc:9191";
+                $window.location.href = "http://ci:9191";
             }
 
             $scope.signac_ci = function() {
-                $http({method: 'JSONP', url: 'http://192.168.1.11:9090/job/signac/api/json?jsonp=JSON_CALLBACK'}).
+                $http({method: 'JSONP', url: 'http://ci:9090/job/signac/api/json?jsonp=JSON_CALLBACK'}).
                         success(function(data) {
                             updateCiStatus(data, $scope.signacProject);
                         });
 
-                $http({method: 'JSONP', url: 'http://192.168.1.11:9090/job/signac-functional/api/json?jsonp=JSON_CALLBACK'}).
+                $http({method: 'JSONP', url: 'http://ci:9090/job/signac-functional/api/json?jsonp=JSON_CALLBACK'}).
                         success(function(data) {
                             updateCiStatus(data, $scope.signacFuncProject);
                         });
@@ -137,7 +133,7 @@
             $scope.signac_ci();
 
             $scope.sonar = function() {
-                $http({method: 'JSONP', url: 'http://192.168.1.11:9000/api/resources?callback=JSON_CALLBACK&resource=org.iata:signac&metrics=ncloc,coverage,function_complexity,duplicated_lines_density,critical_violations,major_violations,package_tangle_index'}).
+                $http({method: 'JSONP', url: 'http://ci:9000/api/resources?callback=JSON_CALLBACK&resource=org.iata:signac&metrics=ncloc,coverage,function_complexity,duplicated_lines_density,critical_violations,major_violations,package_tangle_index'}).
                         success(function(data) {
                             var msrs = data[0]['msr'];
                             $scope.ncloc = findMetric(msrs, 'ncloc');
@@ -225,24 +221,6 @@
                     <td>
                         <div class="progress progress-success progress-striped" style="margin-bottom: 0px">
                             <div class="bar" ng-style="{'width': percentage(integrationTesting)}">{{percentage(integrationTesting)}}</div>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>QSA Work</td>
-                    <td><b>{{effort(QSA)}}</b></td>
-                    <td>
-                        <div class="progress progress-success progress-striped" style="margin-bottom: 0px">
-                            <div class="bar" ng-style="{'width': percentage(QSA)}">{{percentage(QSA)}}</div>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>High Level Design</td>
-                    <td><b>{{effort(highLevelDesign)}}</b></td>
-                    <td>
-                        <div class="progress progress-success progress-striped" style="margin-bottom: 0px">
-                            <div class="bar" ng-style="{'width': percentage(highLevelDesign)}">{{percentage(highLevelDesign)}}</div>
                         </div>
                     </td>
                 </tr>
@@ -370,8 +348,6 @@
                             <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
                                 <li><a tabindex="-1" href="#" ng-click="reportType='UserStory'">UserStory</a></li>
                                 <li><a tabindex="-1" href="#" ng-click="reportType='FunctionalTesting'">FunctionalTesting</a></li>
-                                <li><a tabindex="-1" href="#" ng-click="reportType='HighLevelDesign'">HighLevelDesign</a></li>
-                                <li><a tabindex="-1" href="#" ng-click="reportType='QSA'">QSA</a></li>
                                 <li><a tabindex="-1" href="#" ng-click="reportType='PerformanceTesting'">PerformanceTesting</a></li>
                                 <li><a tabindex="-1" href="#" ng-click="reportType='IntegrationTesting'">IntegrationTesting</a></li>
                                 <li><a tabindex="-1" href="#" ng-click="reportType='Document'">Document</a></li>

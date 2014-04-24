@@ -57,7 +57,7 @@ public class ReportService {
         while(date.isBefore(yesterday)) {
             final List<Object> mustReports = athena.from(TimeReport.class).find(
                     format("date='%s' and (type='%s' or type='%s' or type='%s' or type='%s' or type='%s' or type='%s' or type='%s')",
-                            date.toDate().getTime(), UserStory, FunctionalTesting, PerformanceTesting, IntegrationTesting, QSA, HighLevelDesign, Document));
+                            date.toDate().getTime(), UserStory, FunctionalTesting, PerformanceTesting, IntegrationTesting, Document));
 
             final List<Object> othersReports = athena.from(TimeReport.class).find(
                     format("date='%s' and (type='%s' or type='%s' or type='%s' or type='%s')",
