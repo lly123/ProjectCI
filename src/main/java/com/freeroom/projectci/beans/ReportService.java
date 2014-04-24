@@ -69,7 +69,7 @@ public class ReportService {
             date = date.plusDays(1);
         }
 
-        System.out.println(">>>>>>>>>>>>>> 22222222222222222");
+        System.out.println(">>>>>>>>>>>>>> 22222222222222222: " + sb.toString());
 
         return sb.toString();
     }
