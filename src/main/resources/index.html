@@ -83,24 +83,24 @@
 
             $scope.signac_ci = function() {
                 $http({method: 'GET', url: 'http://ci:9191/report/timestamp'}).
-                        success(function (timestamp) {
-                            console.info(parseInt(timestamp));
-                        });
+                        success(function (data) {
+                            var timestamp = parseInt(data);
 
-                $http({method: 'JSONP', url: 'http://ci:9090/job/iiNet/api/json?jsonp=JSON_CALLBACK'}).
-                        success(function(data) {
-                            updateCiStatus(data, $scope.signacProject);
-                        });
+                            $http({method: 'JSONP', url: 'http://ci:9090/job/iiNet/api/json?jsonp=JSON_CALLBACK'}).
+                                    success(function (data) {
+                                        updateCiStatus(timestamp, data, $scope.signacProject);
+                                    });
 
-                $http({method: 'JSONP', url: 'http://ci:9090/job/iiNet-FT/api/json?jsonp=JSON_CALLBACK'}).
-                        success(function(data) {
-                            updateCiStatus(data, $scope.signacFuncProject);
+                            $http({method: 'JSONP', url: 'http://ci:9090/job/iiNet-FT/api/json?jsonp=JSON_CALLBACK'}).
+                                    success(function (data) {
+                                        updateCiStatus(timestamp, data, $scope.signacFuncProject);
+                                    });
                         });
 
                 $timeout(function(){$scope.signac_ci();}, 2 * 1000);
             }
 
-            updateCiStatus = function(data, project) {
+            updateCiStatus = function (timestamp, data, project) {
                 var lastBuildPath = data['lastBuild']['url'] + "api/json?jsonp=JSON_CALLBACK";
 
                 $http({method: 'JSONP', url: lastBuildPath}).
@@ -113,7 +113,7 @@
                             if (duration == 0) {
                                 project.color = project.lastFailed ? "progress-danger" : "progress-info";
                                 project.fontColor = "#ccc";
-                                project.percentage = Math.round(((new Date()).getTime() - data['timestamp']) / data['estimatedDuration'] * 100) + '%';
+                                project.percentage = Math.round((timestamp - data['timestamp']) / data['estimatedDuration'] * 100) + '%';
                             } else if (buildStatus == 'SUCCESS') {
                                 project.culprit = "";
                                 project.color = "progress-success"
