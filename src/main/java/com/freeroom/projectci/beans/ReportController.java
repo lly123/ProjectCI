@@ -4,6 +4,8 @@ import com.freeroom.di.annotations.Bean;
 import com.freeroom.di.annotations.Inject;
 import com.freeroom.web.Model;
 
+import java.util.Date;
+
 import static com.freeroom.projectci.beans.ReportType.UserStory;
 import static com.freeroom.web.Model.render;
 
@@ -27,5 +29,10 @@ public class ReportController {
     public Model utilityData()
     {
         return render("text").put("content", reportService.utilityData());
+    }
+
+    public Model timestamp()
+    {
+        return render("text").put("content", new Date().getTime());
     }
 }
