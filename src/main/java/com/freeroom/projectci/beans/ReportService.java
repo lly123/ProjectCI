@@ -51,6 +51,8 @@ public class ReportService {
         final DateTime yesterday = new DateTime().minusDays(1);
         DateTime date = new DateTime(2014, 4, 15, 0, 0, 0);
 
+        System.out.println(">>>>>>>>>>>>>> 1111111111111111");
+
         final StringBuilder sb = new StringBuilder();
         sb.append("date\tMust\tOthers\r\n");
 
@@ -66,6 +68,8 @@ public class ReportService {
             sb.append(format("%s\t%d\t%d\r\n", formatter.print(date), calculateUsedEffort(mustReports), calculateUsedEffort(othersReports)));
             date = date.plusDays(1);
         }
+
+        System.out.println(">>>>>>>>>>>>>> 22222222222222222");
 
         return sb.toString();
     }
