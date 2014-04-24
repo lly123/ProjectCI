@@ -82,7 +82,7 @@
             }
 
             $scope.signac_ci = function() {
-                $http({method: 'JSONP', url: 'http://ci:9191/report/timestamp'}).
+                $http({method: 'GET', url: 'http://ci:9191/report/timestamp'}).
                         success(function (timestamp) {
                             console.info(parseInt(timestamp));
                         });
