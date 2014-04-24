@@ -29,7 +29,7 @@ public class ReportService {
     public Pair<Integer, Integer> getTickBar() {
         final DateTime now = new DateTime();
         final DateTime begin = new DateTime(2014, 4, 15, 0, 0, 0);
-        final DateTime end = new DateTime(2014, 10, 13, 0, 0, 0);
+        final DateTime end = new DateTime(2015, 1, 2, 0, 0, 0);
 
         return Pair.of(Days.daysBetween(begin, end).getDays(), Days.daysBetween(begin, now).getDays());
     }
