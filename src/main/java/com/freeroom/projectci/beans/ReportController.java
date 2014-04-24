@@ -6,7 +6,6 @@ import com.freeroom.web.Model;
 
 import java.util.Date;
 
-import static com.freeroom.projectci.beans.ReportType.UserStory;
 import static com.freeroom.web.Model.render;
 
 @Bean
@@ -33,6 +32,6 @@ public class ReportController {
 
     public Model timestamp()
     {
-        return render("text").put("content", new Date().getTime());
+        return render("text").put("content", String.valueOf(new Date().getTime()));
     }
 }
