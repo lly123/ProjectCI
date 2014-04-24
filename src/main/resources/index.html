@@ -82,6 +82,11 @@
             }
 
             $scope.signac_ci = function() {
+                $http({method: 'JSONP', url: 'http://ci:9191/report/timestamp'}).
+                        success(function (timestamp) {
+                            console.info(parseInt(timestamp));
+                        });
+
                 $http({method: 'JSONP', url: 'http://ci:9090/job/iiNet/api/json?jsonp=JSON_CALLBACK'}).
                         success(function(data) {
                             updateCiStatus(data, $scope.signacProject);
