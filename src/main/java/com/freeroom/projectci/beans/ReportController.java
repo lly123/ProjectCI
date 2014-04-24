@@ -26,10 +26,6 @@ public class ReportController {
 
     public Model utilityData()
     {
-        final String value = reportService.utilityData();
-        System.out.println("***************: " + value);
-        
-        return render("text").
-                put("content", value);
+        return render("text").put("content", reportService.utilityData());
     }
 }

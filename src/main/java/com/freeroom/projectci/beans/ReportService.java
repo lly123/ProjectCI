@@ -29,7 +29,7 @@ public class ReportService {
     public Pair<Integer, Integer> getTickBar() {
         final DateTime now = new DateTime();
         final DateTime begin = new DateTime(2014, 4, 15, 0, 0, 0);
-        final DateTime end = new DateTime(2015, 1, 2, 0, 0, 0);
+        final DateTime end = new DateTime(2015, 1, 1, 0, 0, 0);
 
         return Pair.of(Days.daysBetween(begin, end).getDays(), Days.daysBetween(begin, now).getDays());
     }
@@ -51,8 +51,6 @@ public class ReportService {
         final DateTime yesterday = new DateTime().minusDays(1);
         DateTime date = new DateTime(2014, 4, 15, 0, 0, 0);
 
-        System.out.println(">>>>>>>>>>>>>> 1111111111111111");
-
         final StringBuilder sb = new StringBuilder();
         sb.append("date\tMust\tOthers\r\n");
 
@@ -68,8 +66,6 @@ public class ReportService {
             sb.append(format("%s\t%d\t%d\r\n", formatter.print(date), calculateUsedEffort(mustReports), calculateUsedEffort(othersReports)));
             date = date.plusDays(1);
         }
-
-        System.out.println(">>>>>>>>>>>>>> 22222222222222222: " + sb.toString());
 
         return sb.toString();
     }

@@ -1,9 +1,9 @@
 package com.freeroom.projectci.beans;
 
 public enum ReportType {
-    UserStory(432), FunctionalTesting(71), Document(10),
-    PerformanceTesting(20), IntegrationTesting(10),
-    OverTime(999), BugFixing(60), Leave(120), Others(999);
+    UserStory(432), FunctionalTesting(100), Document(10),
+    PerformanceTesting(40), IntegrationTesting(74),
+    OverTime(999), BugFixing(100), Leave(60), Others(999);
 
     private long estimatedEffort;
 
