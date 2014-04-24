@@ -49,7 +49,7 @@ public class ReportService {
     public String utilityData() {
         final DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyyMMdd");
         final DateTime yesterday = new DateTime().minusDays(1);
-        DateTime date = new DateTime(2013, 7, 23, 0, 0, 0);
+        DateTime date = new DateTime(2014, 4, 15, 0, 0, 0);
 
         final StringBuilder sb = new StringBuilder();
         sb.append("date\tMust\tOthers\r\n");
