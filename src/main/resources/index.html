@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
-    <title>ILDS Project Status</title>
+    <title>iiNet Project Status</title>
     <link href="/css/bootstrap.min.css" rel="stylesheet">
     <script type="text/javascript" src="/js/jquery.min.js"></script>
     <script type="text/javascript" src="/js/angular.min.js"></script>
@@ -82,12 +82,12 @@
             }
 
             $scope.signac_ci = function() {
-                $http({method: 'JSONP', url: 'http://ci:9090/job/signac/api/json?jsonp=JSON_CALLBACK'}).
+                $http({method: 'JSONP', url: 'http://ci:9090/job/iiNet/api/json?jsonp=JSON_CALLBACK'}).
                         success(function(data) {
                             updateCiStatus(data, $scope.signacProject);
                         });
 
-                $http({method: 'JSONP', url: 'http://ci:9090/job/signac-functional/api/json?jsonp=JSON_CALLBACK'}).
+                $http({method: 'JSONP', url: 'http://ci:9090/job/iiNet-FT/api/json?jsonp=JSON_CALLBACK'}).
                         success(function(data) {
                             updateCiStatus(data, $scope.signacFuncProject);
                         });
@@ -133,7 +133,7 @@
             $scope.signac_ci();
 
             $scope.sonar = function() {
-                $http({method: 'JSONP', url: 'http://ci:9000/api/resources?callback=JSON_CALLBACK&resource=org.iata:signac&metrics=ncloc,coverage,function_complexity,duplicated_lines_density,critical_violations,major_violations,package_tangle_index'}).
+                $http({method: 'JSONP', url: 'http://sonar:9000/api/resources?callback=JSON_CALLBACK&resource=org.iata:renoir&metrics=ncloc,coverage,function_complexity,duplicated_lines_density,critical_violations,major_violations,package_tangle_index'}).
                         success(function(data) {
                             var msrs = data[0]['msr'];
                             $scope.ncloc = findMetric(msrs, 'ncloc');
