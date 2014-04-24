@@ -28,8 +28,8 @@ public class ReportService {
 
     public Pair<Integer, Integer> getTickBar() {
         final DateTime now = new DateTime();
-        final DateTime begin = new DateTime(2013, 7, 23, 0, 0, 0);
-        final DateTime end = new DateTime(2014, 1, 31, 0, 0, 0);
+        final DateTime begin = new DateTime(2014, 4, 15, 0, 0, 0);
+        final DateTime end = new DateTime(2014, 10, 13, 0, 0, 0);
 
         return Pair.of(Days.daysBetween(begin, end).getDays(), Days.daysBetween(begin, now).getDays());
     }
@@ -56,7 +56,7 @@ public class ReportService {
 
         while(date.isBefore(yesterday)) {
             final List<Object> mustReports = athena.from(TimeReport.class).find(
-                    format("date='%s' and (type='%s' or type='%s' or type='%s' or type='%s' or type='%s' or type='%s' or type='%s')",
+                    format("date='%s' and (type='%s' or type='%s' or type='%s' or type='%s' or type='%s')",
                             date.toDate().getTime(), UserStory, FunctionalTesting, PerformanceTesting, IntegrationTesting, Document));
 
             final List<Object> othersReports = athena.from(TimeReport.class).find(
